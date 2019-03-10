@@ -1,12 +1,14 @@
 .MODEL SMALL
 
 Data SEGMENT
-Zmienna DB " Witaj $"
+Zmienna DB "Witaj","$"
 ENDS
 
 Program SEGMENT
 	ASSUME CS:Program, DS:Data, SS:Sztos
-	Start:
+Start:
+	mov ax, SEG Data
+	mov ds, ax
 	;Wyswietlenie Zmienna
 	mov ah, 09h
 	mov dx, OFFSET Zmienna
