@@ -2,16 +2,16 @@
 ;                                                                             ;
 ; Plik           : arch1-5e.asm                                               ;
 ; Format         : EXE                                                        ;
-; Cwiczenie      : Kompilacja, konsolidacja i debugowanie program�w           ;
+; Cwiczenie      : Kompilacja, konsolidacja i debugowanie program�w          ;
 ;                  asemblerowych                                              ;
-; Autorzy        : Kamila Kossyn,Łukasz Narloch,grupa 1,czwartek,16:15        ;
+; Autorzy        : Kamila Kossyn, Łukasz Narloch, grupa 1, czw., 16:00-17:30  ;
 ; Data zaliczenia: DD.03.2019                                                 ;
 ; Uwagi          : Program dokonujacy odbicia lustrzanego tekstu o nieznanej  ;
 ;                  dlugosci                                                   ;
 ;                                                                             ;
 ;=============================================================================;
 
-                .MODEL  SNALL
+                .MODEL  SMALL
 
 Kod             SEGM
 

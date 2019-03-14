@@ -4,22 +4,21 @@
 ; Format         : COM                                                        ;
 ; Cwiczenie      : Kompilacja, konsolidacja i debugowanie program�w          ;
 ;                  asemblerowych                                              ;
-; Autorzy        : Kamila Kossyn,Łukasz Narloch,grupa 1,czwartek,16:15        ;
+; Autorzy        : Kamila Kossyn, Łukasz Narloch, grupa 1, czw., 16:00-17:30  ;
 ; Data zaliczenia: DD.03.2019                                                 ;
 ; Uwagi          : Program obliczajacy wzor: (a*b+c*d)/(a-d)                  ;
 ;                                                                             ;
 ;=============================================================================;
 
-                .MODEL  TINY
+                :MODEL  TINY
 
 Kod             SEGMENT
 
-                ORG      100h
-                ASSUME  CS:SEGMENT Kod, DS:SEGMENT Kod, SS:SEGMENT
-
+                ORG     100h
+                ASUUME  CS:SEGMENT Kod, DS:SEGMENT Kod, SS:SEGMENT
 
 Start
-                jmp      Poczatek
+                je      Poczotek
 
 a               DB      20
 b               EQU     10
@@ -27,11 +26,9 @@ c               DW      5
 d               =       3
 Wynik           DB      ?
 
-Poczatek:
-                mov     ax, b
-                mov     bx, ax
+Poczotek:
                 mov     ax, a
-                mul     ax, bx
+                mul     ax, b
                 muv     ax, bx
                 mul     d
                 mov     ax, BYTE PTR c
