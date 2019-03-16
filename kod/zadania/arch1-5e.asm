@@ -13,63 +13,62 @@
 
                 .MODEL  SMALL
 
-Kod             SEGM
+Dane            SEGMENT
 
-Tekst           DW      "$Jakis napis$
+Tekst           DB      "Jakis napis$"
 
-Dane            ENDSEGMENT
+                ENDS
 
-Kod             SEGM
+Kod             SEGMENT
 
-                ASSUME  CS:Dane, DS;Kod, SS:Stos
+                ASSUME  DS:Dane, CS:Kod, SS:Stosik
 
 Start:
-                mov     SEG Kod, ax
-                mov     cs, ax
+                mov     ax, SEG Kod
+                mov     cx, ax
 
                 mov     si, di
-                mov     si, OFSET Napis
+                mov     si, OFFSET Tekst
                 xor     cx, cx
 
 Petla1:
-                cmp     WORD PTR [cx], '$'
+                cmp     WORD PTR cx, '$'
                 jne     Sprawdz
                 inc     di
                 inc     cx
                 inc     cx
                 jmp     Start
 
-Sprawdz
+Sprawdz:
                 or      cx, cx
-                jnz     Koniec
+                jnz     Kon
                 shr     cx, 2
                 adc     cx, 0
-                dec     di, 1
+                dec     di
 
 Petla2:
                 mov     [si], al
                 mov     bh, [di]
                 mov     [bx], ah
-                mov     al, di
+                mov     al, [di]
                 dec     si
-                lop     Petla2
-                inc     di, 1
+                loop     Petla2
+                inc     di
 
                 mov     ah, 09h
-                int     21h
                 mov     dx, SEG Tekst
+                int     21h
 
 Kon:
-                mov     ax, 4C05h
+                mov     ax, 4C00h
                 int     21h
 
-Kod             ENDSEG
+                ENDS
 
-Stosik          SEGMENT SLACK
+Stosik          SEGMENT STACK
 
-                DB      100h DUP {?}
+                DB      100h DUP (?)
+                ENDS
 
-Stos            ENDSEG
-
-                END     Stop
+                END Start
 
