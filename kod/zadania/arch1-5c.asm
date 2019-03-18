@@ -2,7 +2,7 @@
 ;                                                                             ;
 ; Plik           : arch1-5c.asm                                               ;
 ; Format         : COM                                                        ;
-; Cwiczenie      : Kompilacja, konsolidacja i debugowanie program�w          ;
+; Cwiczenie      : Kompilacja, konsolidacja i debugowanie programow           ;
 ;                  asemblerowych                                              ;
 ; Autorzy        : Kamila Kossyn, Łukasz Narloch, grupa 1, czw., 16:00-17:30  ;
 ; Data zaliczenia: DD.03.2019                                                 ;
@@ -10,14 +10,14 @@
 ;                                                                             ;
 ;=============================================================================;
 
-                :MODEL  TINY
+                .MODEL  TINY
 
 Kod             SEGMENT
 
                 ORG     100h
-                ASUUME  CS:SEGMENT Kod, DS:SEGMENT Kod, SS:SEGMENT
+                ASSUME  CS: Kod, DS: Kod, SS:Kod
 
-Start
+Start:
                 je      Poczotek
 
 a               DB      20
@@ -28,8 +28,8 @@ Wynik           DB      ?
 
 Poczotek:
                 mov     ax, a
-                mul     ax, b
-                muv     ax, bx
+                mul     ax
+                mov     bx, ax
                 mul     d
                 mov     ax, BYTE PTR c
                 add     ah, cx
@@ -42,7 +42,7 @@ Poczotek:
                 mov     ax, 4C25h
                 int     21h
 
-Dane            ENDSSEG
+Kod            ENDS
 
-                ENDPROG Kod
+                END Start
 
