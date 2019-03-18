@@ -32,7 +32,7 @@ Start:
                 xor     cx, cx
 
 Petla1:
-                cmp     WORD PTR cx, '$'
+                cmp     WORD PTR [cx], '$'
                 jne     Sprawdz
                 inc     di
                 inc     cx
@@ -56,7 +56,7 @@ Petla2:
                 inc     di
 
                 mov     ah, 09h
-                mov     dx, SEG Tekst
+                mov     dx, OFFSET Tekst
                 int     21h
 
 Kon:
