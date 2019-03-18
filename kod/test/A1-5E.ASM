@@ -1,3 +1,5 @@
+; Napisane na czysto
+; Nie do zgloszenia jako odpowiedz
 ;=============================================================================;
 ;                                                                             ;
 ; Plik           : arch1-5e.asm                                               ;
@@ -24,42 +26,45 @@ Kod             SEGMENT
                 ASSUME  DS:Dane, CS:Kod, SS:Stosik
 
 Start:
-                mov     ax, SEG Kod
-                mov     cx, ax
+                mov     ax, SEG Dane
+                mov     ds, ax
 
-                mov     si, di
-                mov     si, OFFSET Tekst
-                xor     cx, cx
-
-Petla1:
-                cmp     WORD PTR [cx], '$'
-                jne     Sprawdz
-                inc     di
-                inc     cx
-                inc     cx
-                jmp     Start
-
-Sprawdz:
-                or      cx, cx
-                jnz     Kon
-                shr     cx, 2
-                adc     cx, 0
-                dec     di
-
-Petla2:
-                mov     [si], al
-                mov     bh, [di]
-                mov     [bx], ah
-                mov     al, [di]
-                dec     si
-                loop     Petla2
-                inc     di
-
+                ;Wypisanie orginanego tekstu 
                 mov     ah, 09h
                 mov     dx, OFFSET Tekst
                 int     21h
 
-Kon:
+                ;Szukanie wskaznika na ostania litere napisu
+                mov     si, OFFSET Tekst
+ZliczLiteryPetla:
+                cmp     BYTE PTR [si], '$'
+                je     Zamieniaj
+                inc     si
+                jmp     ZliczLiteryPetla
+
+
+                ;Zamienia litery
+Zamieniaj:
+                mov di, si
+                dec di
+                mov si, OFFSET Tekst
+ZamieniajPetla:
+                cmp si, di
+                jnl Kon
+                mov bh, BYTE PTR[si]
+                mov bl, BYTE PTR[di]
+                mov BYTE PTR[si], bl
+                mov BYTE PTR[di], bh
+                dec di
+                inc si
+                jmp ZamieniajPetla
+
+Kon:            
+                ;Wypisanie po zakonczeniu programu    
+                mov     ah, 09h
+                mov     dx, OFFSET Tekst
+                int     21h
+                ;Zakonczenie programu
                 mov     ax, 4C00h
                 int     21h
 
