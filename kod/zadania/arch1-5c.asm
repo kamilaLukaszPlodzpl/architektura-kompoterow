@@ -27,15 +27,29 @@ d               =       3
 Wynik           DB      ?
 
 Poczotek:
-                mov     ax, a
-                mul     ax
+                ;Mnożenie a*b wynik do ax
+                mov al, a
+                mov ah, b
+                mul ah
+
                 mov     bx, ax
-                mul     d
-                mov     ax, BYTE PTR c
-                add     ah, cx
-                mov     bx, DWORD PTR a
-                div     bx
-                sub     dh, d
+                ;Mnożenie c*d wynik do ax
+                mov     ax, d
+                mov     cx, ax
+                mov     ax, c
+                mul     cx
+                
+                ;Dodanie a*b+c*d
+                add     bx, ax
+
+                ;Odjęcie a-d wynik do ax
+                xor     ax, ax
+                mov     al, a
+                sub     al, d
+
+                mov     cx, ax;Dzielinik
+                mov     ax, bx
+                div     cx
 
                 mov     al, Wynik
 
