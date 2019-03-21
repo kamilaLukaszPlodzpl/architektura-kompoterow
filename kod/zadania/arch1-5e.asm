@@ -11,65 +11,66 @@
 ;                                                                             ;
 ;=============================================================================;
 
-                .MODEL  SMALL
+                .MODEL SMALL
 
 Dane            SEGMENT
 
-Tekst           DB      "Jakis napis$"
+Napis           DB "Jakis napis$"
 
 Dane            ENDS
 
 Kod             SEGMENT
 
-                ASSUME  DS:Dane, CS:Kod, SS:Stosik
+                ASSUME CS: Kod, DS: Dane, SS: Sztos
 
-Start:
-                mov     ax, SEG Kod
-                mov     cx, ax
+Start:      
+                mov     ax, SEG Dane
+                mov     ds, ax
 
-                mov     si, di
-                mov     si, OFFSET Tekst
-                xor     cx, cx
-
-Petla1:
-                cmp     WORD PTR [cx], '$'
-                jne     Sprawdz
-                inc     di
-                inc     cx
-                inc     cx
-                jmp     Start
-
-Sprawdz:
-                or      cx, cx
-                jnz     Kon
-                shr     cx, 2
-                adc     cx, 0
-                dec     di
-
-Petla2:
-                mov     [si], al
-                mov     bh, [di]
-                mov     [bx], ah
-                mov     al, [di]
-                dec     si
-                loop     Petla2
-                inc     di
-
+                ;wypisywanie napisu przed rozpoczeciem
                 mov     ah, 09h
-                mov     dx, OFFSET Tekst
+                mov     dx, OFFSET Napis
                 int     21h
 
-Kon:
+                ;ustawienie wskaznikow 
+                mov     ax, OFFSET Napis
+                mov     di, ax
+                mov     si, ax
+Liczenie:   
+                ;poszukiwanie wskaznika na koniec napisu
+                mov     ah, [di]
+                inc     di
+                cmp     ah, '$' 
+                jnz     Liczenie
+                dec     di 
+                dec     di ; pominiecie znaku konca linii
+Zamien:
+                ;Zamiana liter miejscami w napisie
+                mov     ah, [si] ;prypisanie pierwszej litery do ah
+                mov     al, [di] ;ostaniej do al
+                mov     [si], al ;ostatnia litera na pierwszze miejsce
+                mov     [di], ah ; pierwsza na ostatnie
+                inc     si ;przesuniecie na nastepne miejsce
+                dec     di
+                cmp     si, di ;sprawdzenie czy jestesmy na srodku napisu 
+                jng     Zamien 
+
+Kon:        
+                ;wyswietlanie napisu po zakonczeniu
+                mov     ah, 09h
+                mov     dx, OFFSET Napis
+                int     21h
+
+                ;zakonczenie programu
                 mov     ax, 4C00h
                 int     21h
 
 Kod             ENDS
 
-Stosik          SEGMENT STACK
+Sztos           SEGMENT STACK
 
-                DB      100h DUP (?)
+                DB 100h DUP (?)
 
-Stosik          ENDS
+Sztos           ENDS
 
                 END Start
-
