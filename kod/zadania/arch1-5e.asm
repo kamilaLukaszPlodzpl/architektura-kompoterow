@@ -17,7 +17,7 @@ Dane            SEGMENT
 
 Tekst           DB      "Jakis napis$"
 
-                ENDS
+Dane            ENDS
 
 Kod             SEGMENT
 
@@ -63,12 +63,13 @@ Kon:
                 mov     ax, 4C00h
                 int     21h
 
-                ENDS
+Kod             ENDS
 
 Stosik          SEGMENT STACK
 
                 DB      100h DUP (?)
-                ENDS
+
+Stosik          ENDS
 
                 END Start
 
