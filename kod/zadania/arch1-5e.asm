@@ -10,7 +10,6 @@
 ;                  dlugosci                                                   ;
 ;                                                                             ;
 ;=============================================================================;
-
                 .MODEL SMALL                ;może być po jednym segmencie: kodu, danych, stosu
 
 Dane            SEGMENT
