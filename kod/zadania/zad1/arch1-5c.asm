@@ -58,8 +58,8 @@ Poczotek:
                 mov     ax, bx;
                 div     cx
 
-
-                mov     al, Wynik;Ustawiamy exit code na nasz wynik
+                mov     bl, al;Część całkowita trafia do al
+                mov     Wynik, al
 
                 mov     ah, 4Ch;Ustawia wywolanie systemowe na wywolanie zwaracajace kontrole procesowi rodzicowi
                 int     21h;Przerwanie 21h, uruchamia wywolanie systemowe
