@@ -12,81 +12,130 @@ Prog SEGMENT USE16
 Start: 
     mov ax, SEG Data
     mov ds, ax
-    mov ax, SEG Sta
-    mov ss, ax
+    
+    mov bx, 456
+    mov cl, 'l'
+    mov ch, 'h'
 
-    mov ax, -372
-    push ax
-    call PrintU2DW
+    call ReadWord
+
+    mov ah, 02h
+    mov dl, ch
+    int 21h
+    mov dl, cl
+    int 21h
+    
+
 
 EndProg:
     mov ax, 4C00h
     int 21h
 
-    PrintU2DW PROC; Wyświetla liczbe U2
-        push bp
-        mov bp, sp
-        sub sp, 2
-        mov cx, [bp+4]
-        mov ax, cx
-        and ax, 1000000000000000b
-        cmp ax, 1000000000000000b
-        jne PrintU2DW_notNegative
-        mov dl, '-'
-        mov ah, 02h
-        int 21h
-        PrintU2DW_notNegative:
-        and cx, 0111111111111111b
-        mov ax, 1000000000000000b
-        sub ax, cx
-        push ax
-        call PrintDW
-        mov sp, bp
-        pop bp
-        ret 2
-    ENDP 
+ReadWord:;Wczytuje liczbe do bx
+    push ax
+    push cx
+    push dx
+    push bp
+    push si
+    push di
+    mov ah, 01h
+    int 21h
+    cmp al, '-'
+    je ReadWord_firstMinus
+    cmp al, '0'
+    jl ReadWord_firstOther
+    cmp al, '9'
+    jg ReadWord_firstOther
+    jmp ReadWord_firstDgit
+    ReadWord_firstMinus:
+    mov dx, 1111h
+    push dx
+    mov ah, 01h
+    int 21h
+    jmp ReadWord_readNumbers
+    ReadWord_firstDgit:
+    mov dx, 0000h
+    push dx
+    ReadWord_readNumbers:
+    mov cx, 4
+    xor bx,bx
+    ReadWord_readNumbersLoop:
+    mov ah, 0
+    sub al, '0'
+    add ax, bx
+    mov bx, 10
+    mul bx
+    mov bx, ax
+    mov ah, 01h
+    int 21h
+    loop ReadWord_readNumbersLoop;
+    mov ah, 0
+    sub al, '0'
+    add bx, ax
+    pop dx
+    cmp dx, 0000h
+    je ReadWord_notChangeSign
+    neg bx
+    ReadWord_notChangeSign:
+    pop di
+    pop si
+    pop bp
+    pop dx
+    pop cx
+    pop ax
+    ret
+    ReadWord_firstOther:
+    mov ax, 4C00h
+    int 21h
 
-    PrintDW PROC; Wyświetla liczbe nie U2
-        push bp
-        mov bp, sp
-        sub sp, 2
-        mov bx, 10
-        mov cx, [bp+4]
-        push '$'
-    PrintDW_loop:
-        mov ax, cx
-        xor dx,dx
-        div bx
-        mov cx, ax
-        push dx
-        cmp cx, 10
-        jge PrintDW_loop
-        push cx
-    PrintDW_loop_display:
-        pop ax
-        cmp ax, '$'
-        je PrintDW_end
-        push ax
-        call PrintDigit
-        jmp PrintDW_loop_display
-    PrintDW_end:
-        mov sp, bp
-        pop bp
-        ret 2
-    ENDP
+PrintWord:;Wyswietla liczbe z bx
+    pusha
+    mov cx, bx
+    and cx, 1000000000000000b
+    cmp cx, 1000000000000000b
+    jne PrintWord_GenerateLetter
+    ;liczba ujemna
+    mov ah, 02h
+    mov dl, '-'
+    int 21h
+    neg bx
+    PrintWord_GenerateLetter:
+    push '$'
+    PrintWord_GenerateLetter_loop:
+    mov ax, bx
+    mov cx, 10
+    xor dx, dx
+    div cx
+    mov bx, ax
+    add dx, '0'
+    ;append
+    push dx
+    cmp bx, 10
+    jge PrintWord_GenerateLetter_loop
+    mov dx, bx
+    add dx, '0'
+    ;append
+    push dx
+    mov ah, 02h
+    PrintWord_Display:
+    pop dx
+    cmp dx, '$'
+    je PrintWord_End
+    int 21h
+    jmp PrintWord_Display
+    PrintWord_End:
+    popa
+    ret
 
-    PrintDigit PROC
-        push bp
-        mov bp, sp
-        sub sp, 2
-        mov dx, [bp+4]
-        add dl, '0'        
-        mov ah, 02h
-        int 21h
-        mov sp, bp
-        pop bp
-        ret 2
-    ENDP
+    PrintNewLine:
+    pusha
+    mov ah, 02h
+    mov dl, 10
+    int 21h
+    mov dl, 13
+    int 21h
+    popa
+    ret
 
 ENDS
 
