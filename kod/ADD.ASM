@@ -1,35 +1,21 @@
-    .386p
-    .MODEL SMALL
-
-Data SEGMENT USE16
-
-a    DW 0
-
-ENDS
+	.386p
+	.MODEL TINY
 
 Prog SEGMENT USE16
-    ASSUME CS:Prog, DS:Data, SS:Sta
-Start: 
-    mov ax, SEG Data
-    mov ds, ax
-    
-    mov bx, 456
-    mov cl, 'l'
-    mov ch, 'h'
 
-    call ReadWord
+	ORG     100h;Program w formacie COM wymaga przesunięcia o 256 bajtów
+	ASSUME  CS: Prog, DS: Prog, SS: Prog
 
-    mov ah, 02h
-    mov dl, ch
-    int 21h
-    mov dl, cl
-    int 21h
-    
-
+	Start: 
+	mov bx, 1231
+	call ReadWord
+	call PrintWord
 
 EndProg:
     mov ax, 4C00h
     int 21h
+
+
 
 ReadWord:;Wczytuje liczbe do bx
     push ax
@@ -68,12 +54,29 @@ ReadWord:;Wczytuje liczbe do bx
     mov bx, ax
     mov ah, 01h
     int 21h
+    cmp al, '0'
+    jl ReadWord_other
+    cmp al, '9'
+    jg ReadWord_other
     loop ReadWord_readNumbersLoop;
     mov ah, 0
     sub al, '0'
     add bx, ax
+
+
+    jmp ReadWord_endOther
+    ReadWord_other:
+	mov ax, bx
+	mov bx, 10
+	div bx
+	mov bx, ax
+	ReadWord_endOther:
+
     pop dx
     cmp dx, 0000h
+
+
+
     je ReadWord_notChangeSign
     neg bx
     ReadWord_notChangeSign:
@@ -127,22 +130,7 @@ PrintWord:;Wyswietla liczbe z bx
     popa
     ret
 
-    PrintNewLine:
-    pusha
-    mov ah, 02h
-    mov dl, 10
-    int 21h
-    mov dl, 13
-    int 21h
-    popa
-    ret
-
-ENDS
-
-Sta SEGMENT STACK USE16
-
-    DW 1024 DUP (?)
-
 ENDS
 
 END Start
+
