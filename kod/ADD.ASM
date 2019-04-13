@@ -7,10 +7,16 @@ Prog SEGMENT USE16
 	ASSUME  CS: Prog, DS: Prog, SS: Prog
 
 	Start: 
+
 	mov bx, 1231
 	call ReadWord
-	call PrintWord
+    mov ax , bx
+    call ReadWord
 
+    add ebx, eax
+
+    call PrintDWord
+	
 EndProg:
     mov ax, 4C00h
     int 21h
@@ -76,7 +82,6 @@ ReadWord:;Wczytuje liczbe do bx
     cmp dx, 0000h
 
 
-
     je ReadWord_notChangeSign
     neg bx
     ReadWord_notChangeSign:
@@ -128,6 +133,51 @@ PrintWord:;Wyswietla liczbe z bx
     jmp PrintWord_Display
     PrintWord_End:
     popa
+    ret
+
+PrintDWord: ;wyświetla liczbę z ebx
+    push eax
+    push ecx
+    push ebx
+    push edx
+    mov ecx, ebx
+    and ecx, 1000000000000000b
+    cmp ecx, 1000000000000000b
+    jne PrintDWord_GenerateLetter
+    ;liczba ujemna
+    mov ah, 02h
+    mov dl, '-'
+    int 21h
+    neg ebx
+    PrintDWord_GenerateLetter:
+    push '$'
+    PrintDWord_GenerateLetter_loop:
+    mov eax, ebx
+    mov ecx, 10
+    xor edx, edx
+    idiv ecx
+    mov ebx, eax
+    add edx, '0'
+    ;append
+    push edx
+    cmp ebx, 10
+    jge PrintDWord_GenerateLetter_loop
+    mov edx, ebx
+    add edx, '0'
+    ;append
+    push edx
+    mov ah, 02h
+    PrintDWord_Display:
+    pop edx
+    cmp edx, '$'
+    je PrintDWord_End
+    int 21h
+    jmp PrintDWord_Display
+    PrintDWord_End:
+    pop eax
+    pop edx
+    pop ebx
+    pop ecx
     ret
 
 ENDS
