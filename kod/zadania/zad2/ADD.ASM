@@ -11,47 +11,69 @@ Prog SEGMENT USE16
     jmp SkipData
 PodajLiczbe1Tekst DB "Podaj liczbe nr 1$"
 PodajLiczbe2Tekst DB "Podaj liczbe nr 2$"
-WynikTekst DB "Wynik"
+WynikTekst DB "Wynik$"
 c   DD ? ;Miejsce na wynik
     SkipData:
 
     ;Zerowanie
     xor eax, eax
     xor ebx, ebx
-
-    ;Wczytywnie liczby
-    ;mov ax, 32767
-    ;mov bx, 32767
+    ;
     mov dx, OFFSET PodajLiczbe1Tekst
     call PrintString
+
     call ReadWord
+    call ConvertWordToDoubleWord
     call PrintNewLine
-    mov ax, bx
+
+    mov eax, ebx
+
     mov dx, OFFSET PodajLiczbe2Tekst
     call PrintString
+
     call ReadWord
+    call ConvertWordToDoubleWord
     call PrintNewLine
 
-    ;Dodanie 2 liczb 16bit z rejestrów ax bx do rejestru eax
-    add ax, bx
-    jnc plusResult
-    mov bx, ax
-    mov eax, 11111111111111111111111111111111b
-    mov ax, bx
-    plusResult:
+    add ebx, eax
 
-
-    mov c, eax
-    mov ebx, eax
-    
-    mov dx, OFFSET PodajLiczbe1Tekst
+    mov dx, OFFSET WynikTekst
     call PrintString
-    call PrintDoubleWord
 
+    call PrintDoubleWord
+    call PrintNewLine
 
 EndProg:
     mov ax, 4C00h
     int 21h
+
+ConvertWordToDoubleWord:
+    push ax
+    push cx
+    push dx
+    push bp
+    push si
+    push di
+
+    mov ax, bx
+    xor ebx, ebx
+
+    mov dx, 8000h
+    and dx, ax
+    cmp dx, 8000h
+    jne ConvertWordToDoubleWord_Positive
+    mov ebx, 11111111111111111111111111111111b
+    ConvertWordToDoubleWord_Positive:
+    mov bx, ax
+
+    pop di
+    pop si
+    pop bp
+    pop dx
+    pop cx
+    pop ax
+    ret
+
 
 PrintString:
     push ax

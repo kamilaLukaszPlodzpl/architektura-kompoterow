@@ -1,0 +1,2 @@
+d:
+cd D:\ZADANIA\ZAD2
