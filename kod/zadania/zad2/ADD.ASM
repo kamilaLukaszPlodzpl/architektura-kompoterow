@@ -1,3 +1,14 @@
+;=============================================================================;
+;                                                                             ;
+; Plik           : ADD.ASM                                                    ;
+; Format         : COM                                                        ;
+; Cwiczenie      : Cwiczenie 2. Kod uzupelnieniowy do dwoch                   ;
+; Autorzy        : Kamila Kossyn, Łukasz Narloch, grupa 1, czw., 16:00-17:30  ;
+; Data zaliczenia:                                                            ;
+; Uwagi          : Program obliczający sume 2 liczb 16-bit U2                 ;
+;                                                                             ;
+;=============================================================================;
+
 	.386p
 	.MODEL TINY
 
