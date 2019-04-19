@@ -1,2 +1,2 @@
 d:
-cd D:\ZADANIA\ZAD2
+cd D:\ZADANIA\ZAD3

@@ -1,0 +1,43 @@
+
+
+; Wypisuje cyfre
+; Przyklad wywolania
+; mov dl, 1
+; call printNumber
+printNumber PROC
+    push ax
+    add dl, '0'
+    mov ah, 02h
+    int 21h
+    pop ax
+    ret
+printNumber ENDP
+
+
+; Wypisuje znak
+; Przyklad wywolania
+; mov dl, 'r'
+; call printChar
+printChar PROC
+    push ax
+    mov ah, 02h
+    int 21h
+    pop ax
+    ret
+printChar ENDP
+
+; Przechodzi do nastepnej linii
+; Przyklad wywolania
+; call newLine
+newLine PROC
+    push ax
+    push dx
+    mov ah, 02h
+    mov dl, 10
+    int 21h
+    mov dl, 13
+    int 21h
+    pop dx
+    pop ax
+    ret
+newLine ENDP
