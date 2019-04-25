@@ -36,14 +36,25 @@ int main()
     switch(selectedFunction)
     {
         case 1://Srednia z elementow tablicy
-            double tab[] = {1.2, 4.4, 5.5};
-            int n = 3;
+            int n = 0;
+            cout << "Podaj rozmiar tablicy: \n";
+            cin >> n;
+            cout << "podaj n elementow tablicy oddzielonych bialym znakiem: \n";
+            double *tab = new double [n];
+            for ( int i = 0; i < n; i++)
+            {
+                cin >> tab[i];
+            }
             double resultAvg = arrayAvg(tab,n);
             cout << "Srednia z elementow tablicy to: "<< resultAvg << '\n';
             break; 
         case 2://Ilosc wystapien danego znaku
-            char *str = "sjakisnapis";
-            char find = 's';
+            char *str;
+            cout << "Podaj napis: \n";
+            cin >> str;
+            char find;
+            cout << "Jakiego znaku szukac: \n";
+            cin >> find;
             int resultChar = countChar(str, find);
             cout << "Ilosc wystapien znaku \"" << find << "\" wynosi: " << resultChar;
             break;

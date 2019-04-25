@@ -149,8 +149,8 @@ ReadWord:;Wczytuje liczbe do bx
     mov ah, 0
     sub al, '0'
     add bx, ax
-
     jmp ReadWord_endOther
+
     ReadWord_other:
 	mov ax, bx
 	mov bx, 10
@@ -210,46 +210,6 @@ PrintDoubleWord:;Wyswietla liczbe z ebx
     jmp PrintDoubleWord_Display
     PrintDoubleWord_End:
 
-
-    popa
-    ret
-
-PrintWord:;Wyswietla liczbe z bx
-    pusha
-    mov cx, bx
-    and cx, 1000000000000000b
-    cmp cx, 1000000000000000b
-    jne PrintWord_GenerateLetter
-    ;liczba ujemna
-    mov ah, 02h
-    mov dl, '-'
-    int 21h
-    neg bx
-    PrintWord_GenerateLetter:
-    push '$'
-    PrintWord_GenerateLetter_loop:
-    mov ax, bx
-    mov cx, 10
-    xor dx, dx
-    div cx
-    mov bx, ax
-    add dx, '0'
-    ;append
-    push dx
-    cmp bx, 10
-    jge PrintWord_GenerateLetter_loop
-    mov dx, bx
-    add dx, '0'
-    ;append
-    push dx
-    mov ah, 02h
-    PrintWord_Display:
-    pop dx
-    cmp dx, '$'
-    je PrintWord_End
-    int 21h
-    jmp PrintWord_Display
-    PrintWord_End:
     popa
     ret
 
