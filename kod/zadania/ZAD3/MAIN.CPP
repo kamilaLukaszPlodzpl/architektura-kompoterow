@@ -21,9 +21,11 @@ extern "C" int countChar(char *tab, char searchedChar);
 int main()
 {
     cout
-    << "Wybierz wariant\n"
-    << "1. Srednia wartosc z elementow tablicy\n"
-    << "2. Ilosc wystapien danego znaku w ciagu znakow\n"
+    << "//////////////////////////////////////////////////\n"
+    << " Wybierz wariant\n"
+    << " 1. Srednia wartosc z elementow tablicy\n"
+    << " 2. Ilosc wystapien danego znaku w ciagu znakow\n"
+    << "//////////////////////////////////////////////////\n"
     ;
 
     int selectedFunction = -1;
@@ -39,7 +41,7 @@ int main()
             int n = 0;
             cout << "Podaj rozmiar tablicy: \n";
             cin >> n;
-            cout << "podaj n elementow tablicy oddzielonych bialym znakiem: \n";
+            cout << "Podaj n elementow tablicy oddzielonych bialym znakiem: \n";
             double *tab = new double [n];
             for ( int i = 0; i < n; i++)
             {

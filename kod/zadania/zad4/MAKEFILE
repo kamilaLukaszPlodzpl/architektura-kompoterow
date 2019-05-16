@@ -1,0 +1,23 @@
+#;=============================================================================;
+#;                                                                             ;
+#; Plik           : MAKEFILE                                                   ;
+#; Format         :                                                            ;
+#; Cwiczenie      : Ćwiczenie 3. Program hybrydowy                             ;
+#; Autorzy        : Kamila Kossyn, Łukasz Narloch, grupa 1, czw., 16:00-17:30  ;
+#; Data zaliczenia: DD.MM.YYYY                                                 ;
+#; Uwagi          :                                                            ;
+#;                                                                             ;
+#;=============================================================================; 	
+build: clean
+	bcc main.cpp
+
+clean:
+	del *.exe
+	del *.map
+	del *.obj
+
+run: build
+	main.exe
+
+debug: build
+	td main.exe
