@@ -21,3 +21,4 @@ run: build
 
 debug: build
 	td main.exe
+
