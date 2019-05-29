@@ -88,10 +88,6 @@ struct RGBQUAD//Kolor palety w RGB
     BYTE rgbRed;
     BYTE rgbReserved;
 };
-struct SCREEN
-{
-    BYTE data[64000];
-};
 int printBitmap(const char* fileName)
 {
     BITMAPFILEHEADER bmfh;
@@ -114,22 +110,9 @@ int printBitmap(const char* fileName)
     fclose(bmpFile);
     return 0;
 }
-void copyScreen(SCREEN &destination)
-{
-    for(WORD i = 0; i < 64000; i++)
-    {
-        destination.data[i] = video_memory[i];
-    }
-}
-void printScreen(BYTE *src)
-{
-    for(WORD i = 0; i < 64000; i++)
-    {
-        video_memory[i] = src[i];
-    }
-}
 int main()
 {
+	WORD i = 0;
     char *fileName = "boat.bmp";
     cout << "Podaj nazwe pliku: ";
     //cin >> fileName;
@@ -137,9 +120,6 @@ int main()
     graphicsMode();
     setColorsPallete();
     printBitmap(fileName);
-
-    SCREEN screenCopy;
-    copyScreen(screenCopy);
 
     char c = 'e';
     do
@@ -152,7 +132,56 @@ int main()
                 return 0;
             case 'm':
                 textMode();
-                graphicsMode();
+                cout << "1. Normalny obraz\n";
+                cout << "2. Negatyw\n";
+                cout << "3. Rozjasnij/Przyciemnij\n"; 
+                cout << "4. Wygladzanie\n";
+                int selectFunction = -1;
+                cin >> selectFunction;
+                switch(selectFunction)
+                {
+                	case 1:
+    		            graphicsMode();
+						setColorsPallete();
+						printBitmap(fileName);
+                		break;
+                	case 2:
+    		            graphicsMode();
+						setColorsPallete();
+						printBitmap(fileName);
+                    	for(i = 0; i < 64000; i++)
+						{
+							video_memory[i] = ~video_memory[i];
+						}
+                		break;
+                	case 3:
+                		cout << "Podaj wartosc: \n";
+                		BYTE value;
+                		cin >> value;
+    		            graphicsMode();
+						setColorsPallete();
+						printBitmap(fileName);
+                    	for(i = 0; i < 64000; i++)
+						{
+							video_memory[i] = (video_memory[i]+=value) ;
+							if(video_memory[i]>255) video_memory[i] = 255;
+							if(video_memory[i]<0) video_memory[i] = 0;
+						}
+                		break;
+                	case 4:
+                		cout << "Podaj wartosc: \n";
+                		int iterat;
+                		cin >> iterat;
+    		            graphicsMode();
+						setColorsPallete();
+						printBitmap(fileName);
+						for(int cccc = 0;cccc < iterat;cccc++){
+                    	for(i = 1; i < 63999; i++)
+						{
+							video_memory[i] = (video_memory[i-1]/3)+(video_memory[i]/3)+(video_memory[i+1]/3);
+						}}
+                		break;
+				}
                 break;
         }
     }while(c != 'e');
