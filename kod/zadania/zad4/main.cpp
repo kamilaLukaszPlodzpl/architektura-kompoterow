@@ -11,7 +11,7 @@
 
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 200
-
+#define _GRAPHICSOFF
 #include <dos.h>
 #include <stdio.h>
 #include <iostream.h>
@@ -88,6 +88,10 @@ struct RGBQUAD//Kolor palety w RGB
     BYTE rgbRed;
     BYTE rgbReserved;
 };
+struct SCREEN
+{
+    BYTE data[64000];
+};
 int printBitmap(const char* fileName)
 {
     BITMAPFILEHEADER bmfh;
@@ -101,24 +105,57 @@ int printBitmap(const char* fileName)
     fread(&bmfh, sizeof(BITMAPFILEHEADER), 1 , bmpFile);
     fread(&bmih, sizeof(BITMAPINFOHEADER), 1 , bmpFile);
 
-    
-    for(WORD i = 0; i <= 64000; i++)
+    fseek(bmpFile,-64000,2);
+    for(WORD i = 0; i < 64000; i++)
     {
-        BYTE color = fgetc(bmpFile);
+        char color = fgetc(bmpFile);
         video_memory[63999-i] = color;
     }
     fclose(bmpFile);
     return 0;
 }
+void copyScreen(SCREEN &destination)
+{
+    for(WORD i = 0; i < 64000; i++)
+    {
+        destination.data[i] = video_memory[i];
+    }
+}
+void printScreen(BYTE *src)
+{
+    for(WORD i = 0; i < 64000; i++)
+    {
+        video_memory[i] = src[i];
+    }
+}
 int main()
 {
+    char *fileName = "boat.bmp";
+    cout << "Podaj nazwe pliku: ";
+    //cin >> fileName;
+    cout << "\n";
     graphicsMode();
     setColorsPallete();
-    char fileName[] = "boat.bmp";
     printBitmap(fileName);
 
-    cin.get();
-    cin.get();
+    SCREEN screenCopy;
+    copyScreen(screenCopy);
+
+    char c = 'e';
+    do
+    {
+        c = cin.get();
+        switch(c)
+        {
+            case 'e':
+                textMode();
+                return 0;
+            case 'm':
+                textMode();
+                graphicsMode();
+                break;
+        }
+    }while(c != 'e');
     textMode();
    return 0;
 }
