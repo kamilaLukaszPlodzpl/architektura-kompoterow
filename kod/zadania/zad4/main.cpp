@@ -22,6 +22,43 @@ typedef unsigned int UINT;
 typedef unsigned long DWORD;
 typedef unsigned long LONG;
 
+
+struct BITMAPFILEHEADER
+{
+    UINT  bfType;//Opis formatu pliku. Musi być ‘BM’.
+    DWORD bfSize;//Rozmiar pliku BMP w bajtach.
+    UINT  bfReserved1;//Zarezerwowane. Musi być równe 0.
+    UINT  bfReserved2;//Zarezerwowane. Musi być równe 0.
+    DWORD bfOffBits;//Przesunięcie w bajtach początku danych
+    //obrazu liczone od końca struktury 
+};
+struct BITMAPINFOHEADER
+{
+    DWORD biSize;//Rozmiar struktury BITMAPINFOHEADER.
+    LONG  biWidth;//Szerokość bitmapy w pikselach.
+    LONG  biHeight;//Wysokość bitmapy w pikselach.
+    WORD  biPlanes;//Ilość płaszczyzn. Musi być 1.
+    WORD  biBitCount;//Głębia kolorów w bitach na piksel.
+    DWORD biCompression;//Rodzaj kompresji (0 – brak).
+    DWORD biSizeImage;//Rozmiar obrazu w bajtach. Uwaga może być 0.
+    LONG  biXPelsPerMeter;//Rozdzielczość pozioma w pikselach na metr.
+    LONG  biYPelsPerMeter;//Rozdzielczość pionowa w pikselach na metr.
+    DWORD biClrUsed;//Ilość używanych kolorów z palety.
+    DWORD biClrImportant;//Ilość kolorów z palety niezbędnych do
+    //wyświetlenia obrazu
+};
+struct RGBQUAD//Kolor palety w RGB
+{
+    BYTE rgbBlue;
+    BYTE rgbGreen;
+    BYTE rgbRed;
+    BYTE rgbReserved;
+};
+
+BITMAPFILEHEADER bmfh;
+BITMAPINFOHEADER bmih;
+
+
 unsigned char far* video_memory = (unsigned char far*) 0xA0000000L;
 
 void setPixel(int x, int y, BYTE color)
@@ -56,42 +93,8 @@ void setColorsPallete()
 		outp(0x03C9,i * 63 / 255);//B
 	}
 }
-
-struct BITMAPFILEHEADER
-{
-    UINT  bfType;//Opis formatu pliku. Musi być ‘BM’.
-    DWORD bfSize;//Rozmiar pliku BMP w bajtach.
-    UINT  bfReserved1;//Zarezerwowane. Musi być równe 0.
-    UINT  bfReserved2;//Zarezerwowane. Musi być równe 0.
-    DWORD bfOffBits;//Przesunięcie w bajtach początku danych
-    //obrazu liczone od końca struktury 
-};
-struct BITMAPINFOHEADER
-{
-    DWORD biSize;//Rozmiar struktury BITMAPINFOHEADER.
-    LONG  biWidth;//Szerokość bitmapy w pikselach.
-    LONG  biHeight;//Wysokość bitmapy w pikselach.
-    WORD  biPlanes;//Ilość płaszczyzn. Musi być 1.
-    WORD  biBitCount;//Głębia kolorów w bitach na piksel.
-    DWORD biCompression;//Rodzaj kompresji (0 – brak).
-    DWORD biSizeImage;//Rozmiar obrazu w bajtach. Uwaga może być 0.
-    LONG  biXPelsPerMeter;//Rozdzielczość pozioma w pikselach na metr.
-    LONG  biYPelsPerMeter;//Rozdzielczość pionowa w pikselach na metr.
-    DWORD biClrUsed;//Ilość używanych kolorów z palety.
-    DWORD biClrImportant;//Ilość kolorów z palety niezbędnych do
-    //wyświetlenia obrazu
-};
-struct RGBQUAD//Kolor palety w RGB
-{
-    BYTE rgbBlue;
-    BYTE rgbGreen;
-    BYTE rgbRed;
-    BYTE rgbReserved;
-};
 int printBitmap(const char* fileName)
 {
-    BITMAPFILEHEADER bmfh;
-    BITMAPINFOHEADER bmih;
     FILE *bmpFile = fopen(fileName, "rb");
     if (bmpFile == NULL)
     {
@@ -100,22 +103,24 @@ int printBitmap(const char* fileName)
     }
     fread(&bmfh, sizeof(BITMAPFILEHEADER), 1 , bmpFile);
     fread(&bmih, sizeof(BITMAPINFOHEADER), 1 , bmpFile);
-
-    fseek(bmpFile,-64000,2);
-    for(WORD i = 0; i < 64000; i++)
+    LONG size =  bmih.biWidth * bmih.biHeight;
+    fseek(bmpFile,-size,2);
+    for(WORD i = 0; i < size; i++)
     {
         char color = fgetc(bmpFile);
-        video_memory[63999-i] = color;
+        video_memory[(size-1)-i] = color;
     }
     fclose(bmpFile);
     return 0;
 }
+
+
 int main()
 {
 	WORD i = 0;
     char *fileName = "boat.bmp";
     cout << "Podaj nazwe pliku: ";
-    //cin >> fileName;
+    cin >> fileName;
     cout << "\n";
     graphicsMode();
     setColorsPallete();
@@ -132,55 +137,74 @@ int main()
                 return 0;
             case 'm':
                 textMode();
-                cout << "1. Normalny obraz\n";
-                cout << "2. Negatyw\n";
-                cout << "3. Rozjasnij/Przyciemnij\n"; 
-                cout << "4. Wygladzanie\n";
+                cout << "0. Wyjdz\n";
+                cout << "1. Zmien obrazek\n";
+                cout << "2. Normalny obraz\n";
+                cout << "3. Negatyw\n";
+                cout << "4. Rozjasnij/Przyciemnij\n"; 
+                cout << "5. Progowanie\n";
                 int selectFunction = -1;
                 cin >> selectFunction;
+                LONG size =  bmih.biWidth * bmih.biHeight;
                 switch(selectFunction)
                 {
-                	case 1:
+                    case 0://Wyjdz
+                        textMode();
+                        return 0;
+                    case 1:
+                        cout << "Podaj nazwe plik: ";
+                        cin >> fileName;
+    		            graphicsMode();
+						setColorsPallete();
+						printBitmap(fileName);
+                        break;
+                	case 2://Normalnie
     		            graphicsMode();
 						setColorsPallete();
 						printBitmap(fileName);
                 		break;
-                	case 2:
-    		            graphicsMode();
-						setColorsPallete();
-						printBitmap(fileName);
-                    	for(i = 0; i < 64000; i++)
-						{
-							video_memory[i] = ~video_memory[i];
-						}
+                	case 3://Negatyw
+                        graphicsMode();
+                        setColorsPallete();
+                        printBitmap(fileName);
+                        for(i = 0; i < size; i++)
+                        {
+                            video_memory[i] = ~video_memory[i];
+                        }
                 		break;
-                	case 3:
-                		cout << "Podaj wartosc: \n";
-                		BYTE value;
-                		cin >> value;
-    		            graphicsMode();
-						setColorsPallete();
-						printBitmap(fileName);
-                    	for(i = 0; i < 64000; i++)
-						{
-							video_memory[i] = (video_memory[i]+=value) ;
-							if(video_memory[i]>255) video_memory[i] = 255;
-							if(video_memory[i]<0) video_memory[i] = 0;
-						}
-                		break;
-                	case 4:
-                		cout << "Podaj wartosc: \n";
-                		int iterat;
-                		cin >> iterat;
-    		            graphicsMode();
-						setColorsPallete();
-						printBitmap(fileName);
-						for(int cccc = 0;cccc < iterat;cccc++){
-                    	for(i = 1; i < 63999; i++)
-						{
-							video_memory[i] = (video_memory[i-1]/3)+(video_memory[i]/3)+(video_memory[i+1]/3);
-						}}
-                		break;
+                    case 4://Rosjasnienie
+                        cout << "Wartosci dodatnie rozjasniaja, ujemne przyciemniaja. Podaj wartosc:\n";
+                        int value3;
+                        cin >> value3;
+                        graphicsMode();
+                        setColorsPallete();
+                        printBitmap(fileName);
+                        for(i =0; i < size; i++)
+                        {
+                            int x = video_memory[i];
+                            x += value3;
+                            if(x > 255)
+                                x = 255;
+                            else if(x < 0)
+                                x = 0;
+                            video_memory[i] = x;
+                        }
+                        break;
+                    case 5:
+                        cout << "Podaj wartosc progu\n";
+                        BYTE value4;
+                        cin >> value4;
+                        graphicsMode();
+                        setColorsPallete();
+                        printBitmap(fileName);
+                        for(i = 0; i < size; i++)
+                        {
+                            if(video_memory[i] < value4)
+                            {
+                                video_memory[i] = 0;
+                            }
+                        }
+                        break;
 				}
                 break;
         }
