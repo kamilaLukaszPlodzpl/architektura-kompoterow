@@ -61,16 +61,6 @@ BITMAPINFOHEADER bmih;
 
 unsigned char far* video_memory = (unsigned char far*) 0xA0000000L;
 
-void setPixel(int x, int y, BYTE color)
-{
-    int addr = ((SCREEN_WIDTH*SCREEN_HEIGHT) - (SCREEN_WIDTH*y)) + x;
-    video_memory[addr] = color;
-}
-BYTE getPixel(int x, int y)
-{
-    int addr = ((SCREEN_WIDTH*SCREEN_HEIGHT) - (SCREEN_WIDTH*y)) + x;
-    return video_memory[addr];
-}
 void graphicsMode()
 {
     REGPACK regs; 
@@ -192,7 +182,7 @@ int main()
                         break;
                     case 5:
                         cout << "Podaj wartosc progu\n";
-                        BYTE value4;
+                        unsigned char value4;
                         cin >> value4;
                         graphicsMode();
                         setColorsPallete();
